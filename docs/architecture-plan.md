@@ -230,3 +230,21 @@ Dieser Plan enthält keinen Anwendungscode. Er ist vollständig, wenn Go-/No-Go-
 - Microsoft Learn: `WTSEnumerateSessionsW`, `WTSQueryUserToken`, `CreateProcessAsUserW`, `GetNamedPipeClientSessionId`, Desktop Duplication API, Screen capture (Windows.Graphics.Capture), `SendInput`/UIPI, Indirect Display Driver Model (IddCx), Session-0-Isolation, WASAPI Loopback Recording
 - NVIDIA Video Encode and Decode GPU Support Matrix (Encoder-Sessionlimits)
 - github.com/LizardByte/Sunshine, github.com/moonlight-stream (Lizenz GPL-3.0), github.com/nefarius/ViGEmBus (Projektstatus)
+
+---
+
+## 10. Verbindungsabbruch-Policy (Nutzerwunsch)
+
+Gilt für das Trennen des **Streaming-Clients**. Die Windows-Sitzung bleibt dabei unverändert verbunden; der Agent erfasst und kodiert weiter und verwirft die Daten, solange kein Client da ist.
+
+| Phase | Standarddauer | Verhalten |
+|---|---|---|
+| Halten | 0–3 min | Volle Auflösung und Qualität, Reconnect nahtlos |
+| Sparmodus | 3–8 min | Auflösung 800x600, niedrige Bitrate/Framerate; Spiel wird möglichst pausiert (Prozess suspendieren oder Framerate-Limit), da 800x600 allein die Spiel-GPU-Last nicht senkt |
+| Aufräumen | danach | Spiel geordnet beenden (CloseMainWindow, dann Timeout), Agent beenden. Windows-Abmeldung nur, wenn für den Nutzer aktiviert (Standard: aus, da ungespeicherte Daten verloren gehen und die Anwendung keine Sitzungen neu erzeugt) |
+
+- Zeiten und Abmelde-Option pro Nutzer konfigurierbar.
+- Reconnect in Phase 2 stellt die Auflösung wieder her und hebt die Pausierung auf.
+- Auflösungswechsel in der Sitzung per `ChangeDisplaySettingsEx` ist **[T]**: Ob das ohne echten Monitor in der Sitzung funktioniert, prüft ein Folgetest.
+
+**Getrennte RDP-Verbindung der Sitzung** ist ein anderer Fall und kann nicht von der Anwendung vorgetäuscht werden. Ein dauerhaft verbundener RDP-Client als Attrappe ist nur der Notfallplan, falls der Test (M0a) zeigt, dass Capture in getrennten Sitzungen ausfällt.
