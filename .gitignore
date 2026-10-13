@@ -1,0 +1,7 @@
+build/
+out/
+*.obj
+*.exe
+*.pdb
+*.jsonl
+.vs/
