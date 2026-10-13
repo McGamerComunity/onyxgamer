@@ -33,3 +33,10 @@ cl /std:c++17 /EHsc /O2 main.cpp
 - `dd.createHr` ungleich `0x00000000` oder `accessLost` steigt dauerhaft: Capture verloren, HRESULT notieren.
 - `audio.initHr` ungleich 0 oder `peak` bleibt 0 trotz Ton: Kein nutzbarer Audio-Endpunkt in diesem Zustand.
 - Hinweis: `Beep` kann je nach Windows-Konfiguration stumm sein. Wenn `peak` überall 0 ist, zuerst prüfen, ob die verbundene Sitzung den Ton hört, bevor man auf einen Fehler schließt.
+
+## Durchlauf B: Notfallplan "Loopback-RDP" (nur testen, wenn Durchlauf A bei Trennen scheitert)
+Idee: Der Host verbindet sich per Standard-RDP mit sich selbst, damit Windows die Sitzung als verbunden führt.
+1. Auf dem Host Remotedesktopverbindung (`mstsc`) öffnen und sich mit Benutzer A auf den eigenen Rechner verbinden, ggf. über die Adresse `127.0.0.2` (Loopback-Namen unterscheiden sich je nach Konfiguration).
+2. Dort `sessionprobe.exe 600` starten, die Loopback-Verbindung minimieren statt zu trennen (Fenster nicht schließen).
+3. Prüfen, ob `dd.frames` und `render.software=false` über die ganze Zeit bleiben.
+4. Ob das auf deinem Setup überhaupt zulässig und möglich ist, hängt davon ab, wie die Mehrfachsitzungen bereitgestellt werden. Die Anwendung ändert daran nichts.
